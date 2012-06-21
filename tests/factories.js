@@ -1,3 +1,11 @@
+function makeString(stringLength) {
+	var text = [];
+	var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz                      ";
+	for( var i=0; i < stringLength; i++ ) text.push(possible.charAt(Math.floor(Math.random() * possible.length)) );
+	return text.join('');
+}
+
+
 var _rows = [], 
 	_fields = [
 		{name: 'key', type: 'number'},
@@ -11,7 +19,7 @@ var _rows = [],
 		{name: 'array', type: 'array', options: {} }
 	]
 
-for (var i=0; i < 100; i++) _rows.push( {
+for (var i=0; i < 500; i++) _rows.push( {
 	key: ko.observable(i+1), 
 	throwaway: ko.observable( makeString(10) ),
 	name: ko.observable( makeString(10) ),
