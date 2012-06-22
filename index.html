@@ -21,9 +21,11 @@
 	
 </head>
 <body>
+	<div style="border: 2px solid #ddd" data-bind="gfGraph: graph"></div>
 
 <script type="text/javascript" charset="utf-8">
-	
+	var graph = new graphModel( _rows,{label:'date',value:'number'} )
+	ko.applyBindings(graph)
 </script>
 </body>
 </html>
