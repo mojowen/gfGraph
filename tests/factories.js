@@ -19,7 +19,7 @@ var _rows = [],
 		{name: 'array', type: 'array', options: {} }
 	]
 
-for (var i=0; i < 500; i++) _rows.push( {
+for (var i=0; i < 10; i++) _rows.push( {
 	key: ko.observable(i+1), 
 	throwaway: ko.observable( makeString(10) ),
 	name: ko.observable( makeString(10) ),
