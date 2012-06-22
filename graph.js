@@ -184,6 +184,24 @@ graphModel = function(columns,options) {
 		this.columns.push( new this.columns.model(columns[i][this.value],columns[i][this.label]))
 	};
 
+	// Setting up the axis
+
+	var yAxis = new axis([this.width.left,this.height.total+this.height.top/2,this.width.left,this.height.bottom/2]);
+	var xAxis = new axis([this.width.left/2,this.height.total-this.height.bottom,this.width.total-this.width.right/2,this.height.total-this.height.bottom]);
+	this.axisLayer.add(yAxis)
+	this.axisLayer.add(xAxis)
+	for (var i=0; i < this.yTicks.frequency; i++) {
+		var ypos = this.height.top+i*this.height.inner/this.yTicks.frequency,
+			yTick = new this.yTicks.line([this.width.left-this.yTicks.width/2,ypos,this.width.left+this.yTicks.width/2,ypos])
+		this.axisLayer.add(yTick)
+	};
+	yLabel = new this.yTicks.label( (this.width.left - this.yTicks.left), this.height.total-this.height.bottom+5, '0', this.width.left-this.yTicks.left-this.yTicks.width/2 ),
+	this.axisLayer.add(yLabel)
+
+
+
+
+
 	ko.bindingHandlers.gfGraph = { init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
 		var graph = valueAccessor()
 		if( element.id == '' ) {
