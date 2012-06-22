@@ -131,6 +131,59 @@ graphModel = function(columns,options) {
 	}
 	this.ready = ko.observable(false) // hold off rendering rectangles till everything is added
 
+	// This is the main rendering unit which controls when the graph is drawn / redrawn
+	// Anything that relies a column's value (And by extension, this.column.max ) should live in here
+	this.columns.render = ko.computed( function() {
+		if( this.ready() ) {
+			this.graphLayer.removeChildren()
+
+			
+
+			var columns = ko.toJS(this.columns), all = []
+			for (var i=0; i < columns.length; i++) {
+				var tooltip = new this.columns.text({
+					x: this.width.left+i*this.columns.width()*1.5+1*this.columns.width() - columns[i].value.toString().length*3 -4,
+					y: this.height.total-this.height.bottom - 18 -this.height.inner * columns[i].value/this.columns.max() -4,
+					text: columns[i].value,
+					fill: '#222266',
+					textStroke: '#fff',
+					padding: 4
+				})
+				tooltip.hide()
+				var rect = new this.columns.rectangle({
+					x: this.width.left+i*this.columns.width()*1.5+.5*this.columns.width(),
+					y: this.height.total-this.height.bottom,
+					width: this.columns.width(),
+					height: -this.height.inner * columns[i].value/this.columns.max(),
+					tooltip: tooltip
+				})
+				var text = new this.columns.text({
+					x: this.width.left+i*this.columns.width()*1.5+.25*this.columns.width(),
+					y: this.height.total-this.height.bottom + 5,
+					width: this.columns.width()*1.365,
+					text: columns[i].label
+				})
+				all.push({ rectangle: rect, text: text })
+				this.graphLayer.add(rect);
+				this.graphLayer.add(text);
+				this.graphLayer.add(tooltip);
+			}
+			for (var i=0; i < this.yTicks.frequency; i++) { 
+				var ypos = this.height.top+i*this.height.inner/this.yTicks.frequency,
+					label = (this.yTicks.frequency+1-i) * Math.floor( this.columns.max() / (this.yTicks.frequency+1) * 10 ) /10,
+					yLabel = new this.yTicks.label( (this.width.left - this.yTicks.left), ypos - 4, label, this.width.left-this.yTicks.left-this.yTicks.width/2 )
+				this.graphLayer.add(yLabel)
+			}
+			this.graphLayer.draw()
+			return all
+		}
+	},this)
+
+	columns.sort( function(a,b) { return a[this.label] > b[this.label] ? 1 : -1 })
+	for (var i=0; i < columns.length; i++) {
+		this.columns.push( new this.columns.model(columns[i][this.value],columns[i][this.label]))
+	};
+
 	ko.bindingHandlers.gfGraph = { init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
 		var graph = valueAccessor()
 		if( element.id == '' ) {
@@ -148,4 +201,4 @@ graphModel = function(columns,options) {
 		graph.ready(true)
 	}}
 
-}}
+}
