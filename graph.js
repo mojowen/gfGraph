@@ -66,6 +66,70 @@ graphModel = function(columns,options) {
 	this.graphLayer = new Kinetic.Layer()
 	this.axisLayer = new Kinetic.Layer()
 
+	this.columns = ko.observableArray([])
+	this.columns.max = ko.computed( function() { 
+		var columns = ko.toJS(this.columns)
+		return Math.ceil( Math.max.apply( Math, columns.map( function(el) { return el.value }) ) / 10 ) * 10 // Rounds up to nearest 10
+	},this)
+	this.columns.width = ko.computed( function() { 
+		var columns = ko.toJS(this.columns)
+		return this.width.inner / ( (columns.length+1)*.5+columns.length)
+	},this)
+	this.columns.model = function(value,label) {
+		this.label_temporary = label
+		this.label = ko.computed( function() { return ko.toJS(this.label_temporary) },this)
+		this.value_temporary = value
+		this.value = ko.computed( function() { return ko.toJS(this.value_temporary) },this)
+	}
+	this.columns.rectangle = function(obj) {
+		var rect = new Kinetic.Rect({
+			x: obj.x,
+			y: obj.y,
+			width: obj.width,
+			height: obj.height,
+			fill: "#622",
+			stroke: "#333",
+			strokeWidth: 2
+		});
+		rect.setShadow({
+			color: '#333',
+			blur: 4,
+			offset: [2, -2],
+			alpha: 0.5
+		});
+		rect.on('mouseover mousedown', function(evt) {
+			evt.shape.attrs.alpha = .5
+			evt.srcElement.style.cursor = 'pointer'
+			obj.tooltip.show()
+			evt.shape.parent.draw()
+		})
+		rect.on('mouseout', function(evt) { 
+			messageLayer.clear()
+			evt.shape.attrs.alpha = 1
+			evt.srcElement.style.cursor = ''
+			obj.tooltip.hide()
+			evt.shape.parent.draw()
+		})
+		return rect;
+	}
+	this.columns.text = function(obj) {
+		return new Kinetic.Text({
+			x: obj.x,
+			y: obj.y,
+			width: obj.width || 'auto',
+			text: obj.text,
+			fontSize: "10",
+			fontStyle: 'normal',
+			textStrokeWidth: 0,
+			align: obj.align || 'left',
+			textStroke: obj.textStroke || '#747474',
+			verticalAlign: 'top',
+			stroke: obj.stroke || "",
+			fill: obj.fill || "",
+			padding: obj.padding || 0,
+		})
+	}
+	this.ready = ko.observable(false) // hold off rendering rectangles till everything is added
 
 	ko.bindingHandlers.gfGraph = { init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
 		var graph = valueAccessor()
@@ -84,4 +148,4 @@ graphModel = function(columns,options) {
 		graph.ready(true)
 	}}
 
-}
+}}
