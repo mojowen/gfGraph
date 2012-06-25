@@ -1,5 +1,70 @@
 graphModel = function(columns,options) {
 	var options = options || {}
+	this.line = { 
+			inputs: options.line || [],
+			points: [],
+			obj: new Kinetic.Line({
+				points: [],
+				stroke: "#226",
+				strokeWidth: 2,
+				lineCap: "round",
+				lineJoin: "round"
+			}),
+			point: function(x,y,label) { 
+				var point = new Kinetic.Circle({
+					x: x,
+					y: y,
+					radius: 1,
+					stroke: "#333",
+					strokeWidth: 4
+				})
+				point.hoverIn = function() { 
+					point.setRadius(3)
+					point.setStrokeWidth(2)
+					label.show()
+					label.parent.draw();
+				}
+				point.hoverOut = function() {
+					label.hide()
+					point.setRadius(1)
+					label.parent.draw();
+				}
+				if( label) {
+					var hover = new Kinetic.Circle({
+						x: x,
+						y: y,
+						radius: 30
+					})
+					hover.on('mouseover mousedown', function(evt) {
+						point.hoverIn()
+						evt.srcElement.style.cursor = 'pointer'
+					})
+					hover.on('mouseout', function(evt) {
+						point.hoverOut()
+						evt.srcElement.style.cursor = ''
+					})
+					label.parent.add(hover)
+				}
+				return point
+			},
+			label: function(x,y,label) {
+				return new Kinetic.Text({
+					x: x,
+					y: y,
+					width: 'auto',
+					text: label,
+					fontSize: "10",
+					fontStyle: 'normal',
+					textStrokeWidth: 0,
+					align: 'right',
+					textStroke: '#333',
+					verticalAlign: 'top',
+					stroke: "",
+					fill: "",
+					padding: 0,
+				})
+			}
+		}
 	this.value = options.value || 'value'
 	this.label = options.label || 'label'
 	this.width = {
@@ -63,13 +128,16 @@ graphModel = function(columns,options) {
 		});
 	}
 	
+	this.lineLayer = new Kinetic.Layer()
 	this.graphLayer = new Kinetic.Layer()
 	this.axisLayer = new Kinetic.Layer()
 
 	this.columns = ko.observableArray([])
 	this.columns.max = ko.computed( function() { 
-		var columns = ko.toJS(this.columns)
-		return Math.ceil( Math.max.apply( Math, columns.map( function(el) { return el.value }) ) / 10 ) * 10 // Rounds up to nearest 10
+		var columns = ko.toJS(this.columns),
+			y_points = columns.map( function(el) { return el.value })
+		if( this.line.inputs.length > 0 ) y_points = y_points.concat( this.line.inputs.map( function(el) { return el.y }) )
+		return Math.ceil( Math.max.apply( Math, y_points ) / 10 ) * 10 // Rounds up to nearest 10
 	},this)
 	this.columns.width = ko.computed( function() { 
 		var columns = ko.toJS(this.columns)
@@ -98,16 +166,20 @@ graphModel = function(columns,options) {
 			alpha: 0.5
 		});
 		rect.on('mouseover mousedown', function(evt) {
+			if( obj.point ) obj.point.hoverIn()
 			evt.shape.attrs.alpha = .5
 			evt.srcElement.style.cursor = 'pointer'
 			obj.tooltip.show()
+			obj.text.setTextStroke('#226'),
 			evt.shape.parent.draw()
 		})
 		rect.on('mouseout', function(evt) { 
 			messageLayer.clear()
+			if( obj.point ) obj.point.hoverOut()
 			evt.shape.attrs.alpha = 1
 			evt.srcElement.style.cursor = ''
 			obj.tooltip.hide()
+			obj.text.setTextStroke(obj.textStroke || '#747474')
 			evt.shape.parent.draw()
 		})
 		return rect;
@@ -136,11 +208,31 @@ graphModel = function(columns,options) {
 	this.columns.render = ko.computed( function() {
 		if( this.ready() ) {
 			this.graphLayer.removeChildren()
-
-			
+			this.lineLayer.removeChildren()
 
 			var columns = ko.toJS(this.columns), all = []
 			for (var i=0; i < columns.length; i++) {
+				var point = undefined, label = undefined, x = undefined, y = undefined
+
+				// Adding line points
+				for (var p=0; p < this.line.inputs.length ; p++) {
+					if( this.line.inputs[p].x == columns[i].label) {
+						x = this.width.left+i*this.columns.width()*1.5+this.columns.width(),
+						y = this.height.total-this.height.bottom-this.height.inner * this.line.inputs[p].y/this.columns.max()
+						this.line.points.push( x, y - 2)
+						if( this.line.inputs[p].dot ) {
+							if( this.line.inputs[p].label ) { 
+								label = new this.line.label( x - 10, y - 30 , this.line.inputs[p].label )
+								label.hide()
+								this.lineLayer.add( label )
+							}
+							point = new this.line.point( x, y - 2 , label )
+							this.lineLayer.add( point )
+						}
+					}
+				};
+
+
 				var tooltip = new this.columns.text({
 					x: this.width.left+i*this.columns.width()*1.5+1*this.columns.width() - columns[i].value.toString().length*3 -4,
 					y: this.height.total-this.height.bottom - 18 -this.height.inner * columns[i].value/this.columns.max() -4,
@@ -150,21 +242,26 @@ graphModel = function(columns,options) {
 					padding: 4
 				})
 				tooltip.hide()
-				var rect = new this.columns.rectangle({
-					x: this.width.left+i*this.columns.width()*1.5+.5*this.columns.width(),
-					y: this.height.total-this.height.bottom,
-					width: this.columns.width(),
-					height: -this.height.inner * columns[i].value/this.columns.max(),
-					tooltip: tooltip
-				})
 				var text = new this.columns.text({
 					x: this.width.left+i*this.columns.width()*1.5+.25*this.columns.width(),
 					y: this.height.total-this.height.bottom + 5,
 					width: this.columns.width()*1.365,
 					text: columns[i].label
 				})
+				// Determining if the rectangle contains the point
+				if( y <  this.height.total-this.height.bottom -this.height.inner * columns[i].value/this.columns.max() ) point = undefined
+				var rect = new this.columns.rectangle({
+					x: this.width.left+i*this.columns.width()*1.5+.5*this.columns.width(),
+					y: this.height.total-this.height.bottom,
+					width: this.columns.width(),
+					height: -this.height.inner * columns[i].value/this.columns.max(),
+					tooltip: tooltip,
+					text: text,
+					point: point
+				})
+
 				all.push({ rectangle: rect, text: text })
-				this.graphLayer.add(rect);
+				this.graphLayer.add(rect)
 				this.graphLayer.add(text);
 				this.graphLayer.add(tooltip);
 			}
@@ -174,6 +271,9 @@ graphModel = function(columns,options) {
 					yLabel = new this.yTicks.label( (this.width.left - this.yTicks.left), ypos - 4, label, this.width.left-this.yTicks.left-this.yTicks.width/2 )
 				this.graphLayer.add(yLabel)
 			}
+			this.line.obj.setPoints( this.line.points )
+			this.lineLayer.add( this.line.obj )
+			this.lineLayer.draw()
 			this.graphLayer.draw()
 			return all
 		}
@@ -212,6 +312,8 @@ graphModel = function(columns,options) {
 			width: graph.width.total,
 			height: graph.height.total
 		})
+
+		graph.stage.add(graph.lineLayer);
 		graph.stage.add(graph.graphLayer);
 		graph.stage.add(graph.axisLayer);
 		graph.stage.add(graph.messageLayer);
