@@ -14,7 +14,7 @@ graphModel = function(columns,options) {
 				var point = new Kinetic.Circle({
 					x: x,
 					y: y,
-					radius: 1,
+					radius: 2,
 					stroke: "#333",
 					strokeWidth: 4
 				})
@@ -26,7 +26,7 @@ graphModel = function(columns,options) {
 				}
 				point.hoverOut = function() {
 					label.hide()
-					point.setRadius(1)
+					point.setRadius(2)
 					label.parent.draw();
 				}
 				if( label) {
@@ -56,7 +56,7 @@ graphModel = function(columns,options) {
 					fontSize: "10",
 					fontStyle: 'normal',
 					textStrokeWidth: 0,
-					align: 'right',
+					align: 'left',
 					textStroke: '#333',
 					verticalAlign: 'top',
 					stroke: "",
@@ -319,3 +319,4 @@ graphModel = function(columns,options) {
 		graph.ready(true)
 	}}
 
+}
