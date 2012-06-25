@@ -68,7 +68,7 @@ graphModel = function(columns,options) {
 	this.value = options.value || 'value'
 	this.label = options.label || 'label'
 	this.width = {
-		total: options.width || 700,
+		total: options.width || 1000,
 		left: 20,	
 		right: 0
 	}
@@ -221,7 +221,7 @@ graphModel = function(columns,options) {
 						this.line.points.push( x, y - 2)
 						if( this.line.inputs[p].dot ) {
 							if( this.line.inputs[p].label ) { 
-								label = new this.line.label( x - 10, y - 30 , this.line.inputs[p].label )
+								label = new this.line.label( x - 20, y - 30 , this.line.inputs[p].label )
 								label.hide()
 								this.lineLayer.add( label )
 							}
@@ -296,9 +296,6 @@ graphModel = function(columns,options) {
 	};
 	yLabel = new this.yTicks.label( (this.width.left - this.yTicks.left), this.height.total-this.height.bottom+5, '0', this.width.left-this.yTicks.left-this.yTicks.width/2 ),
 	this.axisLayer.add(yLabel)
-
-
-
 
 
 	ko.bindingHandlers.gfGraph = { init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
