@@ -174,7 +174,6 @@ graphModel = function(columns,options) {
 			evt.shape.parent.draw()
 		})
 		rect.on('mouseout', function(evt) { 
-			messageLayer.clear()
 			if( obj.point ) obj.point.hoverOut()
 			evt.shape.attrs.alpha = 1
 			evt.srcElement.style.cursor = ''
@@ -316,9 +315,7 @@ graphModel = function(columns,options) {
 		graph.stage.add(graph.lineLayer);
 		graph.stage.add(graph.graphLayer);
 		graph.stage.add(graph.axisLayer);
-		graph.stage.add(graph.messageLayer);
 		element.className += ' gfGraph'
 		graph.ready(true)
 	}}
 
-}
