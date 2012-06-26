@@ -192,7 +192,7 @@ graphModel = function(columns,options) {
 			fontSize: "10",
 			fontStyle: 'normal',
 			textStrokeWidth: 0,
-			align: obj.align || 'left',
+			align: obj.align || 'center',
 			textStroke: obj.textStroke || '#747474',
 			verticalAlign: 'top',
 			stroke: obj.stroke || "",
@@ -242,9 +242,9 @@ graphModel = function(columns,options) {
 				})
 				tooltip.hide()
 				var text = new this.columns.text({
-					x: this.width.left+i*this.columns.width()*1.5+.25*this.columns.width(),
+					x: this.width.left+i*this.columns.width()*1.5+1.5*this.columns.width()-columns[i].label.length/2*4,
 					y: this.height.total-this.height.bottom + 5,
-					width: this.columns.width()*1.365,
+					width: this.columns.width()*1.25,
 					text: columns[i].label
 				})
 				// Determining if the rectangle contains the point
