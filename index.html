@@ -22,6 +22,7 @@
 </head>
 <body>
 	<div style="border: 2px solid #ddd" data-bind="gfGraph: graph"></div>
+	<div style="border: 2px solid #ddd" data-bind="gfGraph: singleGraph"></div>
 
 <script type="text/javascript" charset="utf-8">
 	var graph = new graphModel( 
@@ -33,6 +34,17 @@
 				{x:'Sat Jan 01 2011',y:0},
 				{x:'Tue Jan 04 2011',y:3, dot: true, label: 'June Bus Trip'},
 				{x:"Mon Jan 10 2011",y:12, dot:true, label: 'June Bus Trip'}
+			]
+		}
+	)
+	var singleGraph = new graphModel( 
+		[ _rows[0] ], 
+		{
+			label:false,
+			value:'number',
+			width: 300,
+			line: [
+				{x:'',y:12, dot: true, label: 'June Bus Trip'}
 			]
 		}
 	)
