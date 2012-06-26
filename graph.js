@@ -144,7 +144,7 @@ graphModel = function(columns,options) {
 		return this.width.inner / ( (columns.length+1)*.5+columns.length)
 	},this)
 	this.columns.model = function(value,label) {
-		this.label_temporary = label
+		this.label_temporary = label || ''
 		this.label = ko.computed( function() { return ko.toJS(this.label_temporary) },this)
 		this.value_temporary = value
 		this.value = ko.computed( function() { return ko.toJS(this.value_temporary) },this)
@@ -270,9 +270,11 @@ graphModel = function(columns,options) {
 					yLabel = new this.yTicks.label( (this.width.left - this.yTicks.left), ypos - 4, label, this.width.left-this.yTicks.left-this.yTicks.width/2 )
 				this.graphLayer.add(yLabel)
 			}
-			this.line.obj.setPoints( this.line.points )
-			this.lineLayer.add( this.line.obj )
-			this.lineLayer.draw()
+			if( this.line.points.length > 0 ) {
+				this.line.obj.setPoints( this.line.points )
+				this.lineLayer.add( this.line.obj )
+				this.lineLayer.draw()
+			}
 			this.graphLayer.draw()
 			return all
 		}
