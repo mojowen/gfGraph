@@ -239,19 +239,21 @@ graphModel = function(columns,options) {
 
 
 				var tooltip = new this.columns.text({
-					x: this.width.left+i*this.columns.width()*1.5+1*this.columns.width() - columns[i].value.toString().length*3 -4,
+					x: this.width.left+i*this.columns.width()*1.5+1*this.columns.width() - columns[i].value.toString().length*3 - 2,
 					y: this.height.total-this.height.bottom - 18 -this.height.inner * columns[i].value/this.columns.max() -4,
 					text: columns[i].value,
 					fill: '#222266',
 					textStroke: '#fff',
-					padding: 4
+					padding: 4,
+					align: 'left'
 				})
 				tooltip.hide()
 				var text = new this.columns.text({
-					x: this.width.left+i*this.columns.width()*1.5+1.5*this.columns.width()-columns[i].label.length/2*4,
+					x: this.width.left+i*this.columns.width()*1.5+1*this.columns.width()-columns[i].label.length*4/3 - 2,
 					y: this.height.total-this.height.bottom + 5,
 					width: this.columns.width()*1.25,
-					text: columns[i].label
+					text: columns[i].label,
+					align: 'left'
 				})
 				// Determining if the rectangle contains the point
 				if( y <  this.height.total-this.height.bottom -this.height.inner * columns[i].value/this.columns.max() ) point = undefined
