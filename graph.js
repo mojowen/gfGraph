@@ -136,8 +136,9 @@ graphModel = function(columns,options) {
 	this.columns = ko.observableArray([])
 	this.columns.max = ko.computed( function() { 
 		var columns = ko.toJS(this.columns),
-			y_points = columns.map( function(el) { return el.value })
-		if( this.line.inputs.length > 0 ) y_points = y_points.concat( this.line.inputs.map( function(el) { return el.y }) )
+			y_points = columns.map( function(el) { return el.value }),
+			inputs = ko.toJS( this.line.inputs )
+		if( inputs.length > 0 ) y_points = y_points.concat( inputs.map( function(el) { var pointValue =  parseFloat(ko.toJS(el.y)); return !isNaN(pointValue) && pointValue > 0 ? pointValue : 0 }) )
 		return Math.ceil( Math.max.apply( Math, y_points ) / 10 ) * 10 // Rounds up to nearest 10
 	},this)
 	this.columns.width = ko.computed( function() { 
