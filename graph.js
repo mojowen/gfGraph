@@ -67,6 +67,7 @@ graphModel = function(columns,options) {
 		}
 	this.value = options.value || 'value'
 	this.label = options.label || 'label'
+	this.sort = options.sort || this.label
 	this.width = {
 		total: options.width || 1000,
 		left: 20,	
@@ -280,10 +281,6 @@ graphModel = function(columns,options) {
 		}
 	},this)
 
-	columns.sort( function(a,b) { return a[this.label] > b[this.label] ? 1 : -1 })
-	for (var i=0; i < columns.length; i++) {
-		this.columns.push( new this.columns.model(columns[i][this.value],columns[i][this.label]))
-	};
 
 	// Setting up the axis
 
