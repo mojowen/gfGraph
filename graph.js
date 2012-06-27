@@ -282,8 +282,8 @@ graphModel = function(columns,options) {
 			if( this.line.points.length > 0 ) {
 				this.line.obj.setPoints( this.line.points )
 				this.lineLayer.add( this.line.obj )
-				this.lineLayer.draw()
 			}
+			this.lineLayer.draw()
 			this.graphLayer.draw()
 			return all
 		}
