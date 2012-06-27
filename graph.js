@@ -210,20 +210,24 @@ graphModel = function(columns,options) {
 		if( this.ready() && this.columns.max() > 0 ) {
 			this.graphLayer.removeChildren()
 			this.lineLayer.removeChildren()
+			this.line.points = [],
+			inputs = ko.toJS( this.line.inputs )
 
 			var columns = ko.toJS(this.columns), all = []
 			for (var i=0; i < columns.length; i++) {
 				var point = undefined, label = undefined, x = undefined, y = undefined
 
 				// Adding line points
-				for (var p=0; p < this.line.inputs.length ; p++) {
-					if( this.line.inputs[p].x == columns[i].label) {
+				for (var p=0; p < inputs.length ; p++) {
+					var pointValue = parseFloat(ko.toJS(inputs[p].y)),
+						pointLabel = ko.toJS(inputs[p].label)
+					if( inputs[p].x == columns[i].label && !isNaN( pointValue ) && pointValue > 0 ) {
 						x = this.width.left+i*this.columns.width()*1.5+this.columns.width(),
-						y = this.height.total-this.height.bottom-this.height.inner * this.line.inputs[p].y/this.columns.max()
+						y = this.height.total-this.height.bottom-this.height.inner * pointValue/this.columns.max()
 						this.line.points.push( x, y - 2)
-						if( this.line.inputs[p].dot ) {
-							if( this.line.inputs[p].label ) { 
-								label = new this.line.label( x - 20, y - 30 , this.line.inputs[p].label )
+						if( inputs[p].dot ) {
+							if( inputs[p].label ) { 
+								label = new this.line.label( x - 20, y - 30 , pointLabel )
 								label.hide()
 								this.lineLayer.add( label )
 							}
