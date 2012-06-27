@@ -21,13 +21,13 @@ graphModel = function(columns,options) {
 				point.hoverIn = function() { 
 					point.setRadius(3)
 					point.setStrokeWidth(2)
-					label.show()
-					label.parent.draw();
+					if( label ) label.show()
+					point.parent.draw();
 				}
 				point.hoverOut = function() {
-					label.hide()
+					if( label ) label.hide()
 					point.setRadius(2)
-					label.parent.draw();
+					point.parent.draw()
 				}
 				if( label) {
 					var hover = new Kinetic.Circle({
