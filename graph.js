@@ -257,10 +257,11 @@ graphModel = function(columns,options) {
 				})
 				// Determining if the rectangle contains the point
 				if( y <  this.height.total-this.height.bottom -this.height.inner * columns[i].value/this.columns.max() ) point = undefined
+				var width = this.columns.width() > 100 ? 100 : this.columns.width()
 				var rect = new this.columns.rectangle({
-					x: this.width.left+i*this.columns.width()*1.5+.5*this.columns.width(),
+					x: this.width.left+i*this.columns.width()*1.5+(this.columns.width()-.5*width),
 					y: this.height.total-this.height.bottom,
-					width: this.columns.width(),
+					width: width,
 					height: -this.height.inner * columns[i].value/this.columns.max(),
 					tooltip: tooltip,
 					text: text,
