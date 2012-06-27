@@ -289,6 +289,17 @@ graphModel = function(columns,options) {
 		}
 	},this)
 
+	var raw_columns = columns
+	ko.computed( function() {
+		this.columns([])
+		var new_columns = ko.toJS(raw_columns), sort = this.sort
+		new_columns = new_columns.sort( function(a,b) { return a[sort] >  b[sort] ? 1 : -1 })
+		for (var i=0; i < new_columns.length; i++) {
+			this.columns.push( new this.columns.model(new_columns[i][this.value],new_columns[i][this.label]))
+		};
+		
+	},this)
+	
 
 	// Setting up the axis
 
