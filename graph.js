@@ -207,7 +207,7 @@ graphModel = function(columns,options) {
 	// This is the main rendering unit which controls when the graph is drawn / redrawn
 	// Anything that relies a column's value (And by extension, this.column.max ) should live in here
 	this.columns.render = ko.computed( function() {
-		if( this.ready() ) {
+		if( this.ready() && this.columns.max() > 0 ) {
 			this.graphLayer.removeChildren()
 			this.lineLayer.removeChildren()
 
